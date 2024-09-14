@@ -1,0 +1,3 @@
+[submodule "src/fenster"]
+	path = src/fenster
+	url = https://github.com/zserge/fenster
