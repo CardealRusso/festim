@@ -1,6 +1,5 @@
 import strutils
 
-##got this from https://github.com/nimgl/imgui/blob/master/src/imgui.nim
 proc currentSourceDir(): string {.compileTime.} =
   result = currentSourcePath().replace("\\", "/")
   result = result[0 ..< result.rfind("/")]
