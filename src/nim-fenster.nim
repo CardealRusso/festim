@@ -1,5 +1,5 @@
 
-const fensterHeader = "fenster/fenster.h"
+const fensterHeader = "fenster.h"
 
 when defined(linux):
   {.passl: "-lX11".}
