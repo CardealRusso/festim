@@ -1,4 +1,4 @@
-import nim-fenster
+import festim
 import random
 
 var app = init(Fenster, "white noise with fenster", 800, 600)
