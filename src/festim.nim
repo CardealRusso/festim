@@ -80,3 +80,6 @@ proc width*(self: Fenster): int =
 
 proc height*(self: Fenster): int =
   result = int(self.raw.height)
+
+proc keys*(self: Fenster): array[256, cint] =
+  result = self.raw.keys
