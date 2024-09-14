@@ -3,6 +3,6 @@ import festim, random
 var app = init(Fenster, "white noise with fenster", 800, 600)
 
 while app.loop():
-  for i in 0 ..< app.width:
-    for j in 0 ..< app.height:
-      app[i, j] = uint32(rand(int32.high))
+  for x in 0 ..< app.width:
+    for y in 0 ..< app.height:
+      app[x, y] = uint32(rand(int32.high))
