@@ -72,8 +72,8 @@ proc sleep*(ms: int) =
 proc `[]`*(self: Fenster, x, y: int): uint32 =
   result = self.raw.buf[y * self.raw.width + x]
 
-proc `[]=`*(self: Fenster, x, y: int, color: uint32) =
-  self.raw.buf[y * self.raw.width + x] = color
+proc `[]=`*(self: Fenster, x, y: int, color: auto) =
+  self.raw.buf[y * self.raw.width + x] = uint32(color)
 
 proc width*(self: Fenster): int =
   result = int(self.raw.width)

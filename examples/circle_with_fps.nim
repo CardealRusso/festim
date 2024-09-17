@@ -9,7 +9,7 @@ var
   centerY = int(app.height / 2)
 
 while app.loop() and app.keys[27] == 0:
-  let randomColor = uint32(rand(0xFFFFFF)) or 0xFF000000'u32
+  let randomColor = rand(0xFFFFFF) or 0xFF000000
   
   for x in centerX - radius .. centerX + radius:
     for y in centerY - radius .. centerY + radius:
