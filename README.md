@@ -10,7 +10,7 @@ Project done in collaboration with @ElegantBeef and @morturo at https://forum.ni
 Opens a 800x600 window, draws a red square and exits when pressing the Escape key:
 
 ```nim
--- red_square_exit_on_esc_key.nim.lua
+-- red_square_exit_on_esc_key.nim
 import festim
 
 var app = init(Fenster, "red square. exit on esc key", 800, 600)
