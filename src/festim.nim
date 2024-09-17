@@ -83,3 +83,12 @@ proc height*(self: Fenster): int =
 
 proc keys*(self: Fenster): array[256, cint] =
   result = self.raw.keys
+
+proc mousex*(self: Fenster): int =
+  result = int(self.raw.x)
+
+proc mousey*(self: Fenster): int =
+  result = int(self.raw.y)
+
+proc mousedown*(self: Fenster): int =
+  result = int(self.raw.mouse)
