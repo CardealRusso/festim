@@ -1,4 +1,4 @@
-import festim, random
+import fenstim, random
 
 var
   app = init(Fenster, "Draw on mouse click. Change color with W key", 800, 600)

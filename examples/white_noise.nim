@@ -1,6 +1,6 @@
-import festim, random
+import fenstim, random
 
-var app = init(Fenster, "White noise with festim", 800, 600)
+var app = init(Fenster, "White noise with fenstim", 800, 600)
 
 while app.loop and app.keys[27] == 0:
   for x in 0 ..< app.width:
