@@ -10,7 +10,7 @@ Project done in collaboration with @ElegantBeef and @morturo at https://forum.ni
 Opens a 800x600 window, draws a red square and exits when pressing the Escape key:
 
 ```nim
-# red_square_exit_on_esc_key.nim
+# examples/red_square.nim
 import festim
 
 var app = init(Fenster, "Red square with festim", 800, 600)
@@ -18,7 +18,9 @@ var app = init(Fenster, "Red square with festim", 800, 600)
 while app.loop and app.keys[27] == 0:
   for x in 350 .. 450:
     for y in 250 .. 350:
-      app[x, y] = 0xFF0000
+      #You can alternatively enter “0xFF0000” but the stored value will still be decimal.
+      #app[x, y] = colRed (with import colors)
+      app[x, y] = 16711680
 
 app.close
 ```
