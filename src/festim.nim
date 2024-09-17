@@ -46,7 +46,7 @@ proc sleep(ms: cint) {.importc: "fenster_sleep", header: fensterHeader.}
 
 proc time*(): int64 {.importc: "fenster_time", header: fensterHeader.}
 
-proc `=destroy`(self: Fenster) =
+proc destroy*(self: Fenster) =
   close(self.raw)
   dealloc(self.raw.buf)
   dealloc(self.raw)

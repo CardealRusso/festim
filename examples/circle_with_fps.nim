@@ -8,7 +8,7 @@ var
   centerX = int(app.width / 2)
   centerY = int(app.height / 2)
 
-while app.loop() and app.keys[27] == 0:
+while app.loop and app.keys[27] == 0:
   let randomColor = rand(0xFFFFFF) or 0xFF000000
   
   for x in centerX - radius .. centerX + radius:
@@ -24,3 +24,5 @@ while app.loop() and app.keys[27] == 0:
     echo "FPS: ", frameCount
     frameCount = 0
     lastTime = currentTime
+
+app.destroy
