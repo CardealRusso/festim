@@ -7,4 +7,4 @@ while app.loop and app.keys[27] == 0:
     for y in 250 .. 350:
       app[x, y] = 0xFF0000
 
-app.destroy
+app.close

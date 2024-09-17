@@ -38,7 +38,7 @@ proc loop(
   fenster: ptr FensterStruct
 ): cint {.importc: "fenster_loop", header: fensterHeader.}
 
-proc close(
+proc fclose(
   fenster: ptr FensterStruct
 ) {.importc: "fenster_close", header: fensterHeader.}
 
@@ -46,8 +46,8 @@ proc sleep(ms: cint) {.importc: "fenster_sleep", header: fensterHeader.}
 
 proc time*(): int64 {.importc: "fenster_time", header: fensterHeader.}
 
-proc destroy*(self: Fenster) =
-  close(self.raw)
+proc close*(self: Fenster) =
+  fclose(self.raw)
   dealloc(self.raw.buf)
   dealloc(self.raw)
 

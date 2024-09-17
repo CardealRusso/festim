@@ -25,4 +25,4 @@ while app.loop and app.keys[27] == 0:
     frameCount = 0
     lastTime = currentTime
 
-app.destroy
+app.close

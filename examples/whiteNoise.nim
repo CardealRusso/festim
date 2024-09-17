@@ -7,4 +7,4 @@ while app.loop:
     for y in 0 ..< app.height:
       app[x, y] = rand(int32.high)
 
-app.destroy
+app.close
