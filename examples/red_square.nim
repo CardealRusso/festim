@@ -1,6 +1,6 @@
 import festim
 
-var app = init(Fenster, "red square. exit on esc key", 800, 600)
+var app = init(Fenster, "Red square with festim", 800, 600)
 
 while app.loop and app.keys[27] == 0:
   for x in 350 .. 450:
