@@ -49,7 +49,7 @@ proc init*(_: type Fenster, title: string, width, height: int, fps: int = 60): F
   result.lastFrameTime = fenster_time()
   result.raw.title = title.cstring
   result.raw.width = width.cint
-  result.raw.height = height.cintHistory
+  result.raw.height = height.cint
 
   result.raw.buf = cast[ptr UncheckedArray[uint32]](alloc(width * height * sizeof(uint32)))
   discard fenster_open(result.raw)
