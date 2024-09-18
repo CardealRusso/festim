@@ -1,17 +1,10 @@
-import strutils
+import os
 
-proc currentSourceDir(): string {.compileTime.} =
-  result = currentSourcePath().replace("\\", "/")
-  result = result[0 ..< result.rfind("/")]
+const fensterHeader = currentSourcePath().parentDir() / "fenster/fenster.h"
 
-const fensterHeader = currentSourceDir() & "/fenster/fenster.h"
-
-when defined(linux):
-  {.passl: "-lX11".}
-elif defined(windows):
-  {.passl: "-lgdi32".}
-elif defined(macosx):
-  {.passl: "-framework Cocoa".}
+when defined(linux): {.passl: "-lX11".}
+elif defined(windows): {.passl: "-lgdi32".}
+elif defined(macosx): {.passl: "-framework Cocoa".}
 
 {.passC: "-Ivendor".}
 
@@ -32,85 +25,56 @@ type
     targetFps: int
     lastFrameTime: int64
 
-proc open(
-  fenster: ptr FensterStruct
-): cint {.importc: "fenster_open", header: fensterHeader.}
+{.push importc, header: fensterHeader.}
+proc fenster_open(fenster: ptr FensterStruct): cint
+proc fenster_loop(fenster: ptr FensterStruct): cint
+proc fenster_close(fenster: ptr FensterStruct)
+proc fenster_sleep(ms: cint)
+proc fenster_time(): int64
+{.pop.}
 
-proc loop(
-  fenster: ptr FensterStruct
-): cint {.importc: "fenster_loop", header: fensterHeader.}
-
-proc fclose(
-  fenster: ptr FensterStruct
-) {.importc: "fenster_close", header: fensterHeader.}
-
-proc sleep(ms: cint) {.importc: "fenster_sleep", header: fensterHeader.}
-
-proc time*(): int64 {.importc: "fenster_time", header: fensterHeader.}
-
+#must replace this with =destroy
 proc close*(self: Fenster) =
-  fclose(self.raw)
-  dealloc(self.raw.buf)
-  dealloc(self.raw)
+  if not self.raw.isNil:
+    fenster_close(self.raw)
+    if not self.raw.buf.isNil:
+      dealloc(self.raw.buf)
+    dealloc(self.raw)
+    self.raw = nil
 
-proc init*(_: type Fenster, title: string, width: int, height: int, fps: int = 60): Fenster =
-  result = Fenster()
-  
+proc init*(_: type Fenster, title: string, width, height: int, fps: int = 60): Fenster =
+  new(result, close)
   result.raw = cast[ptr FensterStruct](alloc0(sizeof(FensterStruct)))
-  result.raw.title = cstring(title)
-  result.raw.width = cint(width)
-  result.raw.height = cint(height)
-  result.raw.buf =
-    cast[ptr UncheckedArray[uint32]](alloc(width * height * sizeof(uint32)))
-  
   result.targetFps = fps
-  result.lastFrameTime = time()
-  
-  discard open(result.raw)
+  result.lastFrameTime = fenster_time()
+  result.raw.title = title.cstring
+  result.raw.width = width.cint
+  result.raw.height = height.cint
+  result.raw.buf = cast[ptr UncheckedArray[uint32]](alloc(width * height * sizeof(uint32)))
+  discard fenster_open(result.raw)
 
 proc loop*(self: Fenster): bool =
   let frameTime = 1000 div self.targetFps
-  let currentTime = time()
-  let timeElapsed = currentTime - self.lastFrameTime
-  
+  let timeElapsed = fenster_time() - self.lastFrameTime
   if timeElapsed < frameTime:
-    sleep(cint(frameTime - timeElapsed))
-  
-  self.lastFrameTime = time()
-  result = loop(self.raw) == 0
+    fenster_sleep((frameTime - timeElapsed).cint)
+  self.lastFrameTime = fenster_time()
+  fenster_loop(self.raw) == 0
 
-proc sleep*(self: Fenster, ms: int) =
-  sleep(cint(ms))
-
-proc time*(self: Fenster): int64 =
-  result = time()
+proc sleep*(ms: int) = fenster_sleep(ms.cint)
+proc time*(): int64 = fenster_time()
 
 proc `[]`*(self: Fenster, x, y: int): uint32 =
-  result = self.raw.buf[y * self.raw.width + x]
+  self.raw.buf[y * self.raw.width + x]
 
-proc `[]=`*(self: Fenster, x, y: int, color: auto) =
-  self.raw.buf[y * self.raw.width + x] = uint32(color)
+proc `[]=`*(self: Fenster, x, y: int, color: SomeInteger) =
+  self.raw.buf[y * self.raw.width + x] = color.uint32
 
-proc width*(self: Fenster): int =
-  result = int(self.raw.width)
-
-proc height*(self: Fenster): int =
-  result = int(self.raw.height)
-
-proc keys*(self: Fenster): array[256, cint] =
-  result = self.raw.keys
-
-proc mousex*(self: Fenster): int =
-  result = int(self.raw.x)
-
-proc mousey*(self: Fenster): int =
-  result = int(self.raw.y)
-
-proc mousedown*(self: Fenster): int =
-  result = int(self.raw.mouse)
-
-proc targetFps*(self: Fenster): int =
-  result = self.targetFps
-
-proc `targetFps=`*(self: Fenster, fps: int) =
-  self.targetFps = fps
+proc width*(self: Fenster): int = self.raw.width.int
+proc height*(self: Fenster): int = self.raw.height.int
+proc keys*(self: Fenster): array[256, cint] = self.raw.keys
+proc mousex*(self: Fenster): int = self.raw.x.int
+proc mousey*(self: Fenster): int = self.raw.y.int
+proc mousedown*(self: Fenster): int = self.raw.mouse.int
+proc targetFps*(self: Fenster): int = self.targetFps
+proc `targetFps=`*(self: Fenster, fps: int) = self.targetFps = fps
