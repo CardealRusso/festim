@@ -63,11 +63,14 @@ proc init*(_: type Fenster, title: string, width: int, height: int): Fenster =
   
   discard open(result.raw)
 
-proc loop*(self: var Fenster): bool =
+proc loop*(self: Fenster): bool =
   result = loop(self.raw) == 0
 
-proc sleep*(ms: int) =
+proc sleep*(self: Fenster, ms: int) =
   sleep(cint(ms))
+
+proc time*(self: Fenster): int64 =
+  result = time()
 
 proc `[]`*(self: Fenster, x, y: int): uint32 =
   result = self.raw.buf[y * self.raw.width + x]
