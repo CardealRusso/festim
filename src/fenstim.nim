@@ -27,8 +27,10 @@ type
     y*: cint
     mouse*: cint
   
-  Fenster* = object
+  Fenster* = ref object
     raw: ptr FensterStruct
+    targetFps: int
+    lastFrameTime: int64
 
 proc open(
   fenster: ptr FensterStruct
@@ -51,7 +53,7 @@ proc close*(self: Fenster) =
   dealloc(self.raw.buf)
   dealloc(self.raw)
 
-proc init*(_: type Fenster, title: string, width: int, height: int): Fenster =
+proc init*(_: type Fenster, title: string, width: int, height: int, fps: int = 60): Fenster =
   result = Fenster()
   
   result.raw = cast[ptr FensterStruct](alloc0(sizeof(FensterStruct)))
@@ -61,9 +63,20 @@ proc init*(_: type Fenster, title: string, width: int, height: int): Fenster =
   result.raw.buf =
     cast[ptr UncheckedArray[uint32]](alloc(width * height * sizeof(uint32)))
   
+  result.targetFps = fps
+  result.lastFrameTime = time()
+  
   discard open(result.raw)
 
 proc loop*(self: Fenster): bool =
+  let frameTime = 1000 div self.targetFps
+  let currentTime = time()
+  let timeElapsed = currentTime - self.lastFrameTime
+  
+  if timeElapsed < frameTime:
+    sleep(cint(frameTime - timeElapsed))
+  
+  self.lastFrameTime = time()
   result = loop(self.raw) == 0
 
 proc sleep*(self: Fenster, ms: int) =
@@ -95,3 +108,9 @@ proc mousey*(self: Fenster): int =
 
 proc mousedown*(self: Fenster): int =
   result = int(self.raw.mouse)
+
+proc targetFps*(self: Fenster): int =
+  result = self.targetFps
+
+proc `targetFps=`*(self: Fenster, fps: int) =
+  self.targetFps = fps

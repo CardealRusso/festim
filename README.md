@@ -7,13 +7,13 @@ Requires only Xlibs (libX11, libcxb, libXau, libXdmcp) on Linux. No additional r
 Project done in collaboration with @ElegantBeef and @morturo at https://forum.nim-lang.org/t/12504
 
 # Examples
-Opens a 800x600 window, draws a red square and exits when pressing the Escape key:
+Opens a 60fps 800x600 window, draws a red square and exits when pressing the Escape key:
 
 ```nim
 # examples/red_square.nim
 import fenstim
 
-var app = init(Fenster, "Red square with fenstim", 800, 600)
+var app = init(Fenster, "Red square with fenstim", 800, 600, 60)
 
 while app.loop and app.keys[27] == 0:
   for x in 350 .. 450:
