@@ -49,7 +49,8 @@ proc init*(_: type Fenster, title: string, width, height: int, fps: int = 60): F
   result.lastFrameTime = fenster_time()
   result.raw.title = title.cstring
   result.raw.width = width.cint
-  result.raw.height = height.cint
+  result.raw.height = height.cintHistory
+
   result.raw.buf = cast[ptr UncheckedArray[uint32]](alloc(width * height * sizeof(uint32)))
   discard fenster_open(result.raw)
 
@@ -78,3 +79,4 @@ proc mousey*(self: Fenster): int = self.raw.y.int
 proc mousedown*(self: Fenster): int = self.raw.mouse.int
 proc targetFps*(self: Fenster): int = self.targetFps
 proc `targetFps=`*(self: Fenster, fps: int) = self.targetFps = fps
+proc modkey*(self: Fenster): int = self.raw.modkey
