@@ -20,7 +20,7 @@ type
     y*: cint
     mouse*: cint
   
-  Fenster* = ref object
+  Fenster* = object
     raw: ptr FensterStruct
     targetFps: int
     lastFrameTime: int64
@@ -33,34 +33,37 @@ proc fenster_sleep(ms: cint)
 proc fenster_time(): int64
 {.pop.}
 
-#must replace this with =destroy
-proc close*(self: Fenster) =
-  if not self.raw.isNil:
-    fenster_close(self.raw)
-    if not self.raw.buf.isNil:
-      dealloc(self.raw.buf)
-    dealloc(self.raw)
-    self.raw = nil
+#I haven't found a logic for close and =destroy to coexist. I welcome suggestions.
+proc `=destroy`(self: Fenster) =
+  fenster_close(self.raw)
+  dealloc(self.raw.buf)
+  dealloc(self.raw)
 
-proc init*(_: type Fenster, title: string, width, height: int, fps: int = 60): Fenster =
-  new(result, close)
+proc init*(_: type Fenster, title: string, width: int, height: int, fps: int = 60): Fenster =
+  result = Fenster()
+  
   result.raw = cast[ptr FensterStruct](alloc0(sizeof(FensterStruct)))
+  result.raw.title = cstring(title)
+  result.raw.width = cint(width)
+  result.raw.height = cint(height)
+  result.raw.buf =
+    cast[ptr UncheckedArray[uint32]](alloc(width * height * sizeof(uint32)))
+  
   result.targetFps = fps
   result.lastFrameTime = fenster_time()
-  result.raw.title = title.cstring
-  result.raw.width = width.cint
-  result.raw.height = height.cint
-
-  result.raw.buf = cast[ptr UncheckedArray[uint32]](alloc(width * height * sizeof(uint32)))
+  
   discard fenster_open(result.raw)
 
-proc loop*(self: Fenster): bool =
+proc loop*(self: var Fenster): bool =
   let frameTime = 1000 div self.targetFps
-  let timeElapsed = fenster_time() - self.lastFrameTime
-  if timeElapsed < frameTime:
-    fenster_sleep((frameTime - timeElapsed).cint)
+  let currentTime = fenster_time()
+  let elapsedTime = currentTime - self.lastFrameTime
+  
+  if elapsedTime < frameTime:
+    fenster_sleep((frameTime - elapsedTime).cint)
+  
   self.lastFrameTime = fenster_time()
-  fenster_loop(self.raw) == 0
+  result = fenster_loop(self.raw) == 0
 
 proc sleep*(ms: int) = fenster_sleep(ms.cint)
 proc time*(): int64 = fenster_time()
@@ -77,6 +80,7 @@ proc keys*(self: Fenster): array[256, cint] = self.raw.keys
 proc mousex*(self: Fenster): int = self.raw.x.int
 proc mousey*(self: Fenster): int = self.raw.y.int
 proc mousedown*(self: Fenster): int = self.raw.mouse.int
-proc targetFps*(self: Fenster): int = self.targetFps
-proc `targetFps=`*(self: Fenster, fps: int) = self.targetFps = fps
 proc modkey*(self: Fenster): int = self.raw.modkey
+
+proc targetFps*(self: Fenster): int = self.targetFps
+proc `targetFps=`*(self: var Fenster, fps: int) = self.targetFps = fps

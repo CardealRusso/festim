@@ -121,7 +121,5 @@ proc main() =
     if angleX > 2 * PI: angleX -= 2 * PI
     if angleY > 2 * PI: angleY -= 2 * PI
 
-  app.close()
-
 when isMainModule:
   main()

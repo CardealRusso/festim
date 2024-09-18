@@ -12,5 +12,3 @@ while app.loop and app.keys[27] == 0:
     let x = clamp(app.mousex, 0, app.width)
     let y = clamp(app.mousey, 0, app.height)
     app[x, y] = currentColor
-
-app.close
