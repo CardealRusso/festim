@@ -81,10 +81,8 @@ proc `[]=`*(self: Fenster, x, y: int, color: SomeInteger) =
 proc width*(self: Fenster): int = self.raw.width.int
 proc height*(self: Fenster): int = self.raw.height.int
 proc keys*(self: Fenster): array[256, cint] = self.raw.keys
-proc mousex*(self: Fenster): int = self.raw.x.int
-proc mousey*(self: Fenster): int = self.raw.y.int
-proc mousedown*(self: Fenster): int = self.raw.mouse.int
-proc modkey*(self: Fenster): int = self.raw.modkey
+proc mouse*(self: Fenster): tuple[x, y, click: int] = (self.raw.x.int, self.raw.y.int, self.raw.mouse.int)
+proc modkey*(self: Fenster): int = self.raw.modkey.int
 
 proc targetFps*(self: Fenster): int = self.targetFps
 proc `targetFps=`*(self: var Fenster, fps: int) = self.targetFps = fps

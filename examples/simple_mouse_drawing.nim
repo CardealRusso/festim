@@ -5,10 +5,13 @@ var
   currentColor = 0xFF0000
 
 while app.loop and app.keys[27] == 0:
+
   if app.keys[ord('W')] == 1:
     currentColor = rand(int32.high)
 
-  if app.mousedown == 1:
-    let x = clamp(app.mousex, 0, app.width)
-    let y = clamp(app.mousey, 0, app.height)
+  let (mouseX, mouseY, mouseDown) = app.mouse
+
+  if app.mouse[2] == 1:
+    let x = clamp(app.mouse[0], 0, app.width)
+    let y = clamp(app.mouse[1], 0, app.height)
     app[x, y] = currentColor
