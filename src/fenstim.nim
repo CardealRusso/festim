@@ -89,41 +89,40 @@ proc modkey*(self: Fenster): int = self.raw.modkey
 proc targetFps*(self: Fenster): int = self.targetFps
 proc `targetFps=`*(self: var Fenster, fps: int) = self.targetFps = fps
 
-proc line*(self: Draw, x1, y1, x2, y2: int, color: SomeInteger, thickness: int = 1): seq[Point] =
-  let start = (x1, y1)
-  let endPoint = (x2, y2)
+proc line*(self: Draw, startPos, endPos: tuple[x, y: int], color: SomeInteger, thickness: int = 1): seq[Point] =
   var points: seq[Point] = @[]
-  
-  var (x1, y1) = start
-  let (x2, y2) = endPoint
-  
-  let dx = abs(x2 - x1)
-  let dy = abs(y2 - y1)
-  let sx = if x1 < x2: 1 else: -1
-  let sy = if y1 < y2: 1 else: -1
-  var err = dx - dy
+  let 
+    (x1, y1) = startPos
+    (x2, y2) = endPos
+    dx = abs(x2 - x1)
+    dy = abs(y2 - y1)
+    sx = if x1 < x2: 1 else: -1
+    sy = if y1 < y2: 1 else: -1
+  var 
+    (x, y) = (x1, y1)
+    err = dx - dy
 
   while true:
     for tx in -thickness div 2 .. thickness div 2:
       for ty in -thickness div 2 .. thickness div 2:
-        let px = x1 + tx
-        let py = y1 + ty
-        if px >= 0 and px < self.fenster.raw.width and py >= 0 and py < self.fenster.raw.height:
+        let 
+          px = x + tx
+          py = y + ty
+        if px in 0..<self.fenster.raw.width and py in 0..<self.fenster.raw.height:
           self.fenster.raw.buf[py * self.fenster.raw.width + px] = color.uint32
           points.add((px, py))
 
-    if x1 == x2 and y1 == y2:
-      break
+    if x == x2 and y == y2: break
 
     let e2 = 2 * err
     if e2 > -dy:
       err -= dy
-      x1 += sx
+      x += sx
     if e2 < dx:
       err += dx
-      y1 += sy
+      y += sy
 
-  return points
+  points
 
 proc paint*(self: Draw, points: seq[Point], color: SomeInteger) =
   for point in points:
