@@ -25,6 +25,11 @@ type
     targetFps: int
     lastFrameTime: int64
 
+  Draw* = object
+    fenster: ptr Fenster
+
+  Point* = tuple[x, y: int]
+
 {.push importc, header: fensterHeader.}
 proc fenster_open(fenster: ptr FensterStruct): cint
 proc fenster_loop(fenster: ptr FensterStruct): cint
@@ -33,7 +38,6 @@ proc fenster_sleep(ms: cint)
 proc fenster_time(): int64
 {.pop.}
 
-#I haven't found a logic for close and =destroy to coexist. I welcome suggestions.
 proc `=destroy`(self: Fenster) =
   fenster_close(self.raw)
   dealloc(self.raw.buf)
@@ -84,3 +88,48 @@ proc modkey*(self: Fenster): int = self.raw.modkey
 
 proc targetFps*(self: Fenster): int = self.targetFps
 proc `targetFps=`*(self: var Fenster, fps: int) = self.targetFps = fps
+
+proc line*(self: Draw, x1, y1, x2, y2: int, color: SomeInteger, thickness: int = 1): seq[Point] =
+  let start = (x1, y1)
+  let endPoint = (x2, y2)
+  var points: seq[Point] = @[]
+  
+  var (x1, y1) = start
+  let (x2, y2) = endPoint
+  
+  let dx = abs(x2 - x1)
+  let dy = abs(y2 - y1)
+  let sx = if x1 < x2: 1 else: -1
+  let sy = if y1 < y2: 1 else: -1
+  var err = dx - dy
+
+  while true:
+    for tx in -thickness div 2 .. thickness div 2:
+      for ty in -thickness div 2 .. thickness div 2:
+        let px = x1 + tx
+        let py = y1 + ty
+        if px >= 0 and px < self.fenster.raw.width and py >= 0 and py < self.fenster.raw.height:
+          self.fenster.raw.buf[py * self.fenster.raw.width + px] = color.uint32
+          points.add((px, py))
+
+    if x1 == x2 and y1 == y2:
+      break
+
+    let e2 = 2 * err
+    if e2 > -dy:
+      err -= dy
+      x1 += sx
+    if e2 < dx:
+      err += dx
+      y1 += sy
+
+  return points
+
+proc paint*(self: Draw, points: seq[Point], color: SomeInteger) =
+  for point in points:
+    let (x, y) = point
+    if x >= 0 and x < self.fenster.raw.width and y >= 0 and y < self.fenster.raw.height:
+      self.fenster.raw.buf[y * self.fenster.raw.width + x] = color.uint32
+
+proc draw*(self: var Fenster): Draw =
+  Draw(fenster: addr self)
