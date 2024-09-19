@@ -6,7 +6,9 @@ proc drawTree(app: var Fenster, x, y, len, angle: float, depth: int) =
   let endX = x + len * cos(angle)
   let endY = y - len * sin(angle)
   
-  discard app.draw.line((x.int, y.int), (endX.int, endY.int), 0xFFFFFF,1)
+  let color = if depth <= 2: 0x00FF00 else: 0x8B4513
+
+  discard app.draw.line((x.int, y.int), (endX.int, endY.int), color)
   
   let newLen = len * 0.7
   let newDepth = depth - 1
