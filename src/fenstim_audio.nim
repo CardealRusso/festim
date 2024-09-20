@@ -1,5 +1,8 @@
 import os
 
+when defined(windows):
+  import winim/inc/mmsystem
+
 const fensterAudioHeader = currentSourcePath().parentDir() / "fenster/fenster_audio.h"
 
 when defined(linux):
@@ -22,9 +25,9 @@ type
       drained: pointer
       full: pointer
     elif defined(windows):
-      header: array[48, byte]  # Approximation for WAVEHDR
-      wo: pointer
-      hdr: array[2, array[48, byte]]  # Approximation for WAVEHDR[2]
+      header: WAVEHDR
+      wo: HWAVEOUT
+      hdr: array[2, WAVEHDR]
       buf: array[2, array[FENSTER_AUDIO_BUFSZ, int16]]
     elif defined(linux):
       pcm: pointer
@@ -49,7 +52,8 @@ proc `=destroy`(self: FensterAudio) =
 proc init*(_: type FensterAudio): FensterAudio =
   result = FensterAudio()
   result.raw = cast[ptr FensterAudioStruct](alloc0(sizeof(FensterAudioStruct)))
-  discard fenster_audio_open(result.raw)
+  if fenster_audio_open(result.raw) != 0:
+    raise newException(IOError, "Failed to open audio")
 
 proc available*(self: FensterAudio): int =
   fenster_audio_available(self.raw).int

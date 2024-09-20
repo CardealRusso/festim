@@ -21,7 +21,7 @@ while app.loop and app.keys[27] == 0:
       app[x, y] = 0xFF0000
 ```
 
-Audio example
+Audio example (Currently linux only)
 ```nim
 # examples/audio.nim
 import fenstim, fenstim_audio
