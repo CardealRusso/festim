@@ -11,11 +11,25 @@ elif defined(macosx):
 
 {.passC: "-Ivendor".}
 
+const FENSTER_AUDIO_BUFSZ = 8192
+
 type
   FensterAudioStruct = object
-    pcm: pointer
-    buf: array[8192, float32]
-    pos: csize_t
+    when defined(macosx):
+      queue: pointer
+      pos: csize_t
+      buf: array[FENSTER_AUDIO_BUFSZ, float32]
+      drained: pointer
+      full: pointer
+    elif defined(windows):
+      header: array[48, byte]  # Approximation for WAVEHDR
+      wo: pointer
+      hdr: array[2, array[48, byte]]  # Approximation for WAVEHDR[2]
+      buf: array[2, array[FENSTER_AUDIO_BUFSZ, int16]]
+    elif defined(linux):
+      pcm: pointer
+      buf: array[FENSTER_AUDIO_BUFSZ, float32]
+      pos: csize_t
 
   FensterAudio* = object
     raw: ptr FensterAudioStruct
