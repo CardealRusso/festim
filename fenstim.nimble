@@ -1,6 +1,6 @@
 # Package
 
-version = "0.0.2"
+version = "0.0.3"
 author = "Comunity"
 description = "The most minimal cross-platform GUI library - in Nim"
 skipDirs = @["examples"]
