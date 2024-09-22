@@ -7,6 +7,7 @@ Requires only Xlibs (libX11, libcxb, libXau, libXdmcp) on Linux. No additional r
 Project done in collaboration with @ElegantBeef and @morturo at https://forum.nim-lang.org/t/12504
 
 # Implementation status
+- [x] Minimal 24-bit RGB framebuffer.
 - [x] Application lifecycle and system events are all handled automatically.
 - [x] Simple polling API without a need for callbacks or multithreading (like Arduino/Processing).
 - [x] Cross-platform keyboard events (keycodes).
