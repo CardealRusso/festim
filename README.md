@@ -6,6 +6,14 @@ Requires only Xlibs (libX11, libcxb, libXau, libXdmcp) on Linux. No additional r
 # Credits
 Project done in collaboration with @ElegantBeef and @morturo at https://forum.nim-lang.org/t/12504
 
+# Implementation status
+- [x] Application lifecycle and system events are all handled automatically.
+- [x] Simple polling API without a need for callbacks or multithreading (like Arduino/Processing).
+- [x] Cross-platform keyboard events (keycodes).
+- [x] Cross-platform mouse events (X/Y + mouse click).
+- [x] Cross-platform timers to have a stable FPS rate. (builtin)
+- [ ] Cross-platform audio playback (WinMM, CoreAudio, ALSA). [#1](https://github.com/CardealRusso/fenstim/issues/1)
+
 # Examples
 Opens a 60fps 800x600 window, draws a red square and exits when pressing the Escape key:
 
