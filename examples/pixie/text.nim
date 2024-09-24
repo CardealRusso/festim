@@ -1,7 +1,7 @@
 import fenstim, pixie
 
 let image = newImage(200, 200)
-image.fill(rgba(255, 255, 255, 255))
+#image.fill(rgba(255, 255, 255, 255))
 
 var font = readFont("Roboto-Regular_1.ttf")
 font.size = 20
@@ -16,8 +16,8 @@ var app = init(Fenster, "Pixie Text Example on Fenstim", 200, 200)
 for y in 0 ..< image.height:
   for x in 0 ..< image.width:
     let rgbx = image.unsafe[x, y]
-    let color = rgbx.color()
-    app[x, y] = (uint32(color.r * 255) shl 16) or (uint32(color.g * 255) shl 8) or (uint32(color.b * 255))
+    let color = (uint32(rgbx.r) shl 16) or (uint32(rgbx.g) shl 8) or uint32(rgbx.b)
+    app[x, y] = color
 
 while app.loop and app.keys[27] == 0:
   discard
