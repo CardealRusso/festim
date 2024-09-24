@@ -25,11 +25,6 @@ type
     targetFps: int
     lastFrameTime: int64
 
-  Draw* = object
-    fenster: ptr Fenster
-
-  Point* = tuple[x, y: int]
-
 {.push importc, header: fensterHeader.}
 proc fenster_open(fenster: ptr FensterStruct): cint
 proc fenster_loop(fenster: ptr FensterStruct): cint
@@ -86,47 +81,3 @@ proc modkey*(self: Fenster): int = self.raw.modkey.int
 
 proc targetFps*(self: Fenster): int = self.targetFps
 proc `targetFps=`*(self: var Fenster, fps: int) = self.targetFps = fps
-
-proc line*(self: Draw, startPos, endPos: tuple[x, y: int], color: SomeInteger, thickness: int = 1): seq[Point] =
-  var points: seq[Point] = @[]
-  let 
-    (x1, y1) = startPos
-    (x2, y2) = endPos
-    dx = abs(x2 - x1)
-    dy = abs(y2 - y1)
-    sx = if x1 < x2: 1 else: -1
-    sy = if y1 < y2: 1 else: -1
-  var 
-    (x, y) = (x1, y1)
-    err = dx - dy
-
-  while true:
-    for tx in -thickness div 2 .. thickness div 2:
-      for ty in -thickness div 2 .. thickness div 2:
-        let 
-          px = x + tx
-          py = y + ty
-        if px in 0..<self.fenster.raw.width and py in 0..<self.fenster.raw.height:
-          self.fenster.raw.buf[py * self.fenster.raw.width + px] = color.uint32
-          points.add((px, py))
-
-    if x == x2 and y == y2: break
-
-    let e2 = 2 * err
-    if e2 > -dy:
-      err -= dy
-      x += sx
-    if e2 < dx:
-      err += dx
-      y += sy
-
-  points
-
-proc paint*(self: Draw, points: seq[Point], color: SomeInteger) =
-  for point in points:
-    let (x, y) = point
-    if x >= 0 and x < self.fenster.raw.width and y >= 0 and y < self.fenster.raw.height:
-      self.fenster.raw.buf[y * self.fenster.raw.width + x] = color.uint32
-
-proc draw*(self: var Fenster): Draw =
-  Draw(fenster: addr self)
