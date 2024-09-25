@@ -73,6 +73,10 @@ proc `[]`*(self: Fenster, x, y: int): uint32 =
 proc `[]=`*(self: Fenster, x, y: int, color: SomeInteger) =
   self.raw.buf[y * self.raw.width + x] = color.uint32
 
+proc `[]=`*(self: Fenster, x, y: int, color: tuple[r, g, b: uint8]) =
+  let packed = (uint32(color.r) shl 16) or (uint32(color.g) shl 8) or uint32(color.b)
+  self.raw.buf[y * self.raw.width + x] = packed
+
 proc width*(self: Fenster): int = self.raw.width.int
 proc height*(self: Fenster): int = self.raw.height.int
 proc keys*(self: Fenster): array[256, cint] = self.raw.keys

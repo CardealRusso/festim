@@ -16,8 +16,7 @@ var app = init(Fenster, "Pixie Text Example on Fenstim", 200, 200)
 for y in 0 ..< image.height:
   for x in 0 ..< image.width:
     let rgbx = image.unsafe[x, y]
-    let color = (uint32(rgbx.r) shl 16) or (uint32(rgbx.g) shl 8) or uint32(rgbx.b)
-    app[x, y] = color
+    app[x, y] = (rgbx.r, rgbx.g, rgbx.b)
 
 while app.loop and app.keys[27] == 0:
   discard
