@@ -10,7 +10,7 @@ let searchPatterns = when defined(linux):
     "/usr/*/fonts/**/*.ttf",
     "/usr/*/*/fonts/**/*.ttf",
     "/usr/*/*/*/fonts/**/*.ttf",
-    "/usr/*/*/*/*/fonts/**/*.ttf",
+    "/usr/*/*/*/*/fonts/**/*.ttf"
   ]
 elif defined(macos):
   [
