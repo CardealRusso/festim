@@ -20,16 +20,20 @@ import fenstim
 
 var app = init(Fenster, "My Window", 800, 600, 60)
 
+if app.loop:
+  echo "Window target FPS: ", app.targetFps, ", Resolution: ", app.width, "x", app.height
+
 while app.loop:
   # Set pixel color
-  app[400, 300] = 0xFF0000  # Red
-  app[410, 300] = (0.uint8, 255.uint8, 0.uint8)  # Green
+  app[400, 300] = 16711680  # Decimal red
+  app[410, 300] = (0.uint8, 255.uint8, 0.uint8)  # (r, g, b) green
+  app[420, 300] = 0x0000FF # Hexadecimal blue
 
   # Get pixel color
-  let color = app[420, 300]
+  let color = app[420, 300] # Decimal
 
   # Check key press
-  if app.keys[ord('A')] != 0:
+  if app.keys[ord('A')] == 1:
     echo "A key is pressed"
 
   # Get mouse position and click state
