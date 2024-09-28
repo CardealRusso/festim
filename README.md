@@ -57,7 +57,7 @@ while app.loop and app.keys[27] == 0:
 ### Initialization
 ```nim
 proc init*(_: type Fenster, title: string, width: int, height: int, fps: int = 60): Fenster
-```
+```  
 Creates a new Fenster window with the specified title, dimensions, and target FPS.
 
 ### Main Loop
@@ -88,8 +88,6 @@ proc keys*(self: Fenster): array[256, cint]
 proc mouse*(self: Fenster): tuple[x, y, click: int]
 proc modkey*(self: Fenster): int
 ```
-keys = Array of key states. Index corresponds to ASCII value (0-255), but arrows are 17..20.
-
-mouse = Get mouse position (x, y) and click state.
-
+keys = Array of key states. Index corresponds to ASCII value (0-255), but arrows are 17..20.  
+mouse = Get mouse position (x, y) and click state.  
 modkey = 4 bits mask, ctrl=1, shift=2, alt=4, meta=8
