@@ -1,10 +1,5 @@
-# [Fenster](https://github.com/zserge/fenster)
-The most minimal cross-platform GUI library.
-
-Requires only Xlibs (libX11, libcxb, libXau, libXdmcp) on Linux. No additional requirements for Windows (gdi32) or MAC (Cocoa)
-
-# Credits
-Project done in collaboration with @ElegantBeef and @morturo at https://forum.nim-lang.org/t/12504
+# Fenstim
+Fenstim is a Nim wrapper for [Fenster](https://github.com/zserge/fenster), the most minimal cross-platform GUI library. It provides a simple and efficient way to create graphical applications in Nim.
 
 # Implementation status
 - [x] Minimal 24-bit RGB framebuffer.
@@ -15,7 +10,35 @@ Project done in collaboration with @ElegantBeef and @morturo at https://forum.ni
 - [x] Cross-platform timers to have a stable FPS rate. (builtin)
 - [ ] Cross-platform audio playback (WinMM, CoreAudio, ALSA). [#1](https://github.com/CardealRusso/fenstim/issues/1)
 
+# Credits
+Project done in collaboration with @ElegantBeef and @morturo at https://forum.nim-lang.org/t/12504
+
 # Examples
+Basic usage
+```nim
+import fenstim
+
+var app = init(Fenster, "My Window", 800, 600, 60)
+
+while app.loop:
+  # Set pixel color
+  app[400, 300] = 0xFF0000  # Red
+  app[410, 300] = (0.uint8, 255.uint8, 0.uint8)  # Green
+
+  # Get pixel color
+  let color = app[420, 300]
+
+  # Check key press
+  if app.keys[ord('A')] != 0:
+    echo "A key is pressed"
+
+  # Get mouse position and click state
+  let (mouseX, mouseY, mouseClick) = app.mouse
+
+  # Adjust FPS
+  app.targetFps = 30
+```
+
 Opens a 60fps 800x600 window, draws a red square and exits when pressing the Escape key:
 
 ```nim
@@ -30,33 +53,43 @@ while app.loop and app.keys[27] == 0:
       app[x, y] = 0xFF0000
 ```
 
-Audio example (Currently linux only)
+# API usage
+### Initialization
 ```nim
-# examples/audio.nim
-import fenstim, fenstim_audio
-
-var 
-  app = init(Fenster, "Audio Example", 320, 240, 60)
-  app_audio = init(FensterAudio)
-  t, u = 0
-
-proc generateAudio(n: int): seq[float32] =
-  result = newSeq[float32](n)
-  for i in 0..<n:
-    u.inc
-    let x = (u * 80 div 441).int
-    result[i] = float32(((((x shr 10) and 42) * x) and 0xff)) / 256.0
-
-while app.loop and app.keys[27] == 0:
-  t.inc
-
-  let n = app_audio.available
-  if n > 0:
-    let audio = generateAudio(n)
-    app_audio.write(audio)
-
-  for i in 0..<app.width:
-    for j in 0..<app.height:
-      app[i, j] = (i * j * t)
-
+proc init*(_: type Fenster, title: string, width: int, height: int, fps: int = 60): Fenster
 ```
+Creates a new Fenster window with the specified title, dimensions, and target FPS.
+
+### Main Loop
+```nim
+proc loop*(self: var Fenster): bool
+```
+Handles events and updates the display. Returns false when the window should close.
+
+### Pixel Manipulation
+```nim
+proc `[]`*(self: Fenster, x, y: int): uint32
+proc `[]=`*(self: Fenster, x, y: int, color: SomeInteger)
+proc `[]=`*(self: Fenster, x, y: int, color: tuple[r, g, b: uint8])
+```
+Get or set pixel color at (x, y). Color can be specified as a 32-bit integer or as an (r, g, b) tuple.
+
+### Window Properties
+```nim
+proc width*(self: Fenster): int
+proc height*(self: Fenster): int
+proc targetFps*(self: Fenster): int
+proc `targetFps=`*(self: var Fenster, fps: int)
+```
+
+### Input Handling
+```nim
+proc keys*(self: Fenster): array[256, cint]
+proc mouse*(self: Fenster): tuple[x, y, click: int]
+proc modkey*(self: Fenster): int
+```
+keys = Array of key states. Index corresponds to ASCII value (0-255), but arrows are 17..20.
+
+mouse = Get mouse position (x, y) and click state.
+
+modkey = 4 bits mask, ctrl=1, shift=2, alt=4, meta=8
