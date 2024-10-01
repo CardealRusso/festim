@@ -57,34 +57,6 @@ while app.loop and app.keys[27] == 0:
       app[x, y] = 0xFF0000
 ```
 
-Visual Pattern
-```nim
-import fenstim
-
-var 
-  app = init(Fenster, "Visual Pattern 1", 320, 240, 60)
-  t = 0
-
-while app.loop and app.keys[27] == 0:
-  t.inc
-  for i in 0..<app.width:
-    for j in 0..<app.height:
-      app[i, j] = uint32((i xor j xor t) * 65793)  # 65793 = (1 shl 16) + (1 shl 8) + 1
-```
-```nim
-import fenstim
-
-var 
-  app = init(Fenster, "Visual Pattern 2", 320, 240, 60)
-  t = 0
-
-while app.loop and app.keys[27] == 0:
-  t.inc
-  for i in 0..<app.width:
-    for j in 0..<app.height:
-      app[i, j] = (i * j * t)
-```
-
 # API usage
 ### Initialization
 ```nim
@@ -123,3 +95,11 @@ proc modkey*(self: Fenster): int
 keys = Array of key states. Index corresponds to ASCII value (0-255), but arrows are 17..20.  
 mouse = Get mouse position (x, y) and click state.  
 modkey = 4 bits mask, ctrl=1, shift=2, alt=4, meta=8
+
+### Low-complexity art gallery
+```nim
+      let plasma = sin(i.float * 0.04 + t) + sin(j.float * 0.03) + sin((i.float + j.float) * 0.02)
+      let color = uint32((plasma + 3) * 85)
+      app[i, j] = color shl 16 or (color shl 1) shl 8 or color shl 2
+```
+![screenshot](examples/gifs/lca1.gif)
