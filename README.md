@@ -96,7 +96,7 @@ keys = Array of key states. Index corresponds to ASCII value (0-255), but arrows
 mouse = Get mouse position (x, y) and click state.  
 modkey = 4 bits mask, ctrl=1, shift=2, alt=4, meta=8
 
-### Low-complexity art gallery
+# Low-complexity art gallery
 ```nim
   t += 0.1
   for i in 0..<app.width:
