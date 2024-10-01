@@ -113,7 +113,7 @@ modkey = 4 bits mask, ctrl=1, shift=2, alt=4, meta=8
     for j in 0..<app.height:
       app[i, j] = (i xor j xor t) * 65793
 ```
-![lca1](examples/gifs/lca2.gif)
+![lca2](examples/gifs/lca2.gif)
 
 ```nim
   t += 1
@@ -121,4 +121,42 @@ modkey = 4 bits mask, ctrl=1, shift=2, alt=4, meta=8
     for j in 0..<app.height:
       app[i, j] = (i * j * t)
 ```
-![lca1](examples/gifs/lca3.gif)
+![lca3](examples/gifs/lca3.gif)
+
+```nim
+import fenstim, math
+
+var app = init(Fenster, "Interactive Julia Set", 800, 600, 60)
+
+proc julia(x, y, cx, cy: float32, maxIter: int): int =
+  var 
+    zx = x
+    zy = y
+  for i in 1..maxIter:
+    let
+      zx2 = zx*zx
+      zy2 = zy*zy
+    if zx2 + zy2 > 4: return i
+    zy = 2*zx*zy + cy
+    zx = zx2 - zy2 + cx
+  return 0
+
+var cx, cy: float32 = 0
+
+while app.loop and app.keys[27] == 0:
+  let (mouseX, mouseY, _) = app.mouse
+  cx = mouseX.float32 / app.width.float32 * 4 - 2
+  cy = mouseY.float32 / app.height.float32 * 4 - 2
+
+  for px in 0..<app.width:
+    for py in 0..<app.height:
+      let x = px.float32 / app.width.float32 * 4 - 2
+      let y = py.float32 / app.height.float32 * 4 - 2
+      let c = julia(x, y, cx, cy, 100)
+      let r = uint8((sin(c.float32 * 0.1) + 1) * 127)
+      let g = uint8((sin(c.float32 * 0.13 + 1) + 1) * 127)
+      let b = uint8((sin(c.float32 * 0.17 + 2) + 1) * 127)
+      app[px, py] = (r.uint32 shl 16) or (g.uint32 shl 8) or b.uint32
+
+```
+![lca4](examples/gifs/lca4.gif)
