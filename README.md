@@ -26,7 +26,7 @@ if app.loop:
 while app.loop:
   # Set pixel color
   app[400, 300] = 16711680  # Decimal red
-  app[410, 300] = (0.uint8, 255.uint8, 0.uint8)  # (r, g, b) green
+  app[410, 300] = (0, 255, 0)  # (r, g, b) green
   app[420, 300] = 0x0000FF # Hexadecimal blue
 
   # Get pixel color
@@ -55,6 +55,34 @@ while app.loop and app.keys[27] == 0:
   for x in 350 .. 450:
     for y in 250 .. 350:
       app[x, y] = 0xFF0000
+```
+
+Visual Pattern
+```nim
+import fenstim
+
+var 
+  app = init(Fenster, "Visual Pattern 1", 320, 240, 60)
+  t = 0
+
+while app.loop and app.keys[27] == 0:
+  t.inc
+  for i in 0..<app.width:
+    for j in 0..<app.height:
+      app[i, j] = uint32((i xor j xor t) * 65793)  # 65793 = (1 shl 16) + (1 shl 8) + 1
+```
+```nim
+import fenstim
+
+var 
+  app = init(Fenster, "Visual Pattern 2", 320, 240, 60)
+  t = 0
+
+while app.loop and app.keys[27] == 0:
+  t.inc
+  for i in 0..<app.width:
+    for j in 0..<app.height:
+      app[i, j] = (i * j * t)
 ```
 
 # API usage

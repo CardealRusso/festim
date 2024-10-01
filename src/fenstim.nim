@@ -38,7 +38,7 @@ proc `=destroy`(self: Fenster) =
   dealloc(self.raw.buf)
   dealloc(self.raw)
 
-proc init*(_: type Fenster, title: string, width: int, height: int, fps: int = 60): Fenster =
+proc init*(_: type Fenster, title: string, width, height: int, fps: int = 60): Fenster =
   result = Fenster()
   
   result.raw = cast[ptr FensterStruct](alloc0(sizeof(FensterStruct)))
@@ -64,24 +64,27 @@ proc loop*(self: var Fenster): bool =
   self.lastFrameTime = fenster_time()
   result = fenster_loop(self.raw) == 0
 
-proc sleep*(ms: int) = fenster_sleep(ms.cint)
-proc time*(): int64 = fenster_time()
-
 proc `[]`*(self: Fenster, x, y: int): uint32 =
   self.raw.buf[y * self.raw.width + x]
 
 proc `[]=`*(self: Fenster, x, y: int, color: SomeInteger) =
   self.raw.buf[y * self.raw.width + x] = color.uint32
 
-proc `[]=`*(self: Fenster, x, y: int, color: tuple[r, g, b: uint8]) =
-  let packed = (uint32(color.r) shl 16) or (uint32(color.g) shl 8) or uint32(color.b)
-  self.raw.buf[y * self.raw.width + x] = packed
+proc `[]=`*(self: Fenster, x, y: int, color: tuple[r, g, b: SomeInteger]) =
+  let 
+    r = uint8(clamp(color.r, 0, 255))
+    g = uint8(clamp(color.g, 0, 255))
+    b = uint8(clamp(color.b, 0, 255))
+    packed = (uint32(r) shl 16) or (uint32(g) shl 8) or uint32(b)
+
+  self[x, y] = packed
 
 proc width*(self: Fenster): int = self.raw.width.int
 proc height*(self: Fenster): int = self.raw.height.int
 proc keys*(self: Fenster): array[256, cint] = self.raw.keys
 proc mouse*(self: Fenster): tuple[x, y, click: int] = (self.raw.x.int, self.raw.y.int, self.raw.mouse.int)
 proc modkey*(self: Fenster): int = self.raw.modkey.int
-
 proc targetFps*(self: Fenster): int = self.targetFps
 proc `targetFps=`*(self: var Fenster, fps: int) = self.targetFps = fps
+proc sleep*(ms: int) = fenster_sleep(ms.cint)
+proc time*(): int64 = fenster_time()
