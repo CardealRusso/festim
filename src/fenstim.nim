@@ -84,7 +84,39 @@ proc height*(self: Fenster): int = self.raw.height.int
 proc keys*(self: Fenster): array[256, cint] = self.raw.keys
 proc mouse*(self: Fenster): tuple[x, y, click: int] = (self.raw.x.int, self.raw.y.int, self.raw.mouse.int)
 proc modkey*(self: Fenster): int = self.raw.modkey.int
-proc targetFps*(self: Fenster): int = self.targetFps
-proc `targetFps=`*(self: var Fenster, fps: int) = self.targetFps = fps
 proc sleep*(ms: int) = fenster_sleep(ms.cint)
 proc time*(): int64 = fenster_time()
+
+#Below are functions that are not part of Fenster
+proc targetFps*(self: Fenster): int = self.targetFps
+proc `targetFps=`*(self: var Fenster, fps: int) = self.targetFps = fps
+
+proc getFonts*(self: Fenster): seq[string] =
+  let searchPatterns = when defined(linux):
+    @[
+      expandTilde("~/.local/share/fonts/**/*.ttf"),
+      expandTilde("~/.fonts/**/*.ttf"),
+      "/usr/*/fonts/**/*.ttf",
+      "/usr/*/*/fonts/**/*.ttf",
+      "/usr/*/*/*/fonts/**/*.ttf",
+      "/usr/*/*/*/*/fonts/**/*.ttf"
+    ]
+  elif defined(macosx):
+    @[
+      expandTilde("~/Library/Fonts/**/*.ttf"),
+      "/Library/Fonts/**/*.ttf",
+      "/System/Library/Fonts/**/*.ttf",
+      "/Network/Library/Fonts/**/*.ttf"
+    ]
+  elif defined(windows):
+    @[
+      getEnv("SYSTEMROOT") & r"\Fonts\*.ttf",
+      getEnv("LOCALAPPDATA") & r"\Microsoft\Windows\Fonts\*.ttf"
+    ]
+  else:
+    @[]
+
+  result = newSeq[string]()
+  for pattern in searchPatterns:
+    for entry in walkPattern(pattern):
+      result.add(entry)
