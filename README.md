@@ -96,7 +96,8 @@ keys = Array of key states. Index corresponds to ASCII value (0-255), but arrows
 mouse = Get mouse position (x, y) and click state.  
 modkey = 4 bits mask, ctrl=1, shift=2, alt=4, meta=8
 
-# Low-complexity art gallery
+# Examples
+### Low-complexity art gallery
 ```nim
   t += 0.1
   for i in 0..<app.width:
@@ -160,3 +161,67 @@ while app.loop and app.keys[27] == 0:
 
 ```
 ![lca4](examples/gifs/lca4.gif)
+
+## Others use case
+```nim
+import fenstim, pixie
+
+proc createButton(ctx: Context, x, y, width, height: float32) =
+  let buttonShadow = newImage(int(width), int(height))
+  buttonShadow.fill(rgba(212, 208, 200, 255))
+  let shadow = buttonShadow.shadow(
+    offset = vec2(2, 2),
+    spread = 1,
+    blur = 2,
+    color = rgba(0, 0, 0, 100)
+  )
+  ctx.drawImage(shadow, x, y)
+
+  ctx.fillStyle = "#D4D0C8"
+  ctx.fillRect(x, y, width, height)
+  
+  ctx.strokeStyle = "#000000"
+  ctx.lineWidth = 1
+  ctx.strokeRect(x, y, width, height)
+
+  ctx.strokeStyle = "#FFFFFF"
+  ctx.beginPath()
+  ctx.moveTo(x + 1, y + height - 1)
+  ctx.lineTo(x + 1, y + 1)
+  ctx.lineTo(x + width - 1, y + 1)
+  ctx.stroke()
+
+var app = init(Fenster, "Windows XP style buttons with text", 300, 200)
+
+let image = newImage(300, 200)
+let ctx = newContext(image)
+
+ctx.fillStyle = "#D4D0C8"
+ctx.fillRect(0, 0, 300, 200)
+
+ctx.strokeStyle = "#000000"
+ctx.lineWidth = 1
+ctx.strokeRect(0, 0, 300, 200)
+
+createButton(ctx, 130, 150, 75, 23)
+createButton(ctx, 215, 150, 75, 23)
+
+let fonts = app.getFonts
+
+var font = readFont(fonts[0])
+
+font.size = 16
+font.paint.color = color(0, 0, 0)
+
+image.fillText(font.typeset("Yes", vec2(75, 33)), translate(vec2(150, 153)))
+image.fillText(font.typeset("No", vec2(75, 33)), translate(vec2(235, 153)))
+
+for y in 0 ..< image.height:
+  for x in 0 ..< image.width:
+    let rgbx = image.unsafe[x, y]
+    app[x, y] = (rgbx.r, rgbx.g, rgbx.b)
+
+while app.loop and app.keys[27] == 0:
+  discard
+```
+![usecase1](examples/gifs/usecase1.png)
