@@ -126,7 +126,9 @@ modkey = 4 bits mask, ctrl=1, shift=2, alt=4, meta=8
 ```nim
 import fenstim, math
 
-var app = init(Fenster, "Interactive Julia Set", 800, 600, 60)
+var 
+  app = init(Fenster, "Interactive Julia Set", 800, 600, 60)
+  cx, cy: float32 = 0
 
 proc julia(x, y, cx, cy: float32, maxIter: int): int =
   var 
@@ -144,8 +146,6 @@ proc julia(x, y, cx, cy: float32, maxIter: int): int =
     zx = zx2 - zy2 + cx
 
   return 0
-
-var cx, cy: float32 = 0
 
 while app.loop and app.keys[27] == 0:
   let (mouseX, mouseY, _) = app.mouse
