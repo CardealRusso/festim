@@ -33,10 +33,18 @@ proc fenster_sleep(ms: cint)
 proc fenster_time(): int64
 {.pop.}
 
-proc `=destroy`(self: Fenster) =
+proc close*(self: var Fenster) =
   fenster_close(self.raw)
   dealloc(self.raw.buf)
   dealloc(self.raw)
+  self.raw = nil
+
+proc `=destroy`(self: Fenster) =
+  if self.raw != nil:
+    echo true
+    fenster_close(self.raw)
+    dealloc(self.raw.buf)
+    dealloc(self.raw)
 
 proc init*(_: type Fenster, title: string, width, height: int, fps: int = 60): Fenster =
   result = Fenster()
@@ -90,7 +98,6 @@ proc time*(): int64 = fenster_time()
 #Below are functions that are not part of Fenster
 proc targetFps*(self: Fenster): int = self.targetFps
 proc `targetFps=`*(self: var Fenster, fps: int) = self.targetFps = fps
-
 proc getFonts*(self: Fenster): seq[string] =
   let searchPatterns = when defined(linux):
     @[

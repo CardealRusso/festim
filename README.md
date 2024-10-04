@@ -60,7 +60,7 @@ while app.loop and app.keys[27] == 0:
 # API usage
 ### Initialization
 ```nim
-proc init*(_: type Fenster, title: string, width: int, height: int, fps: int = 60): Fenster
+proc init*(_: type Fenster, title: string, width, height: int, fps: int = 60): Fenster
 ```  
 Creates a new Fenster window with the specified title, dimensions, and target FPS.
 
@@ -74,7 +74,7 @@ Handles events and updates the display. Returns false when the window should clo
 ```nim
 proc `[]`*(self: Fenster, x, y: int): uint32
 proc `[]=`*(self: Fenster, x, y: int, color: SomeInteger)
-proc `[]=`*(self: Fenster, x, y: int, color: tuple[r, g, b: uint8])
+proc `[]=`*(self: Fenster, x, y: int, color: tuple[r, g, b: SomeInteger])
 ```
 Get or set pixel color at (x, y). Color can be specified as a 32-bit integer or as an (r, g, b) tuple.
 
@@ -84,6 +84,7 @@ proc width*(self: Fenster): int
 proc height*(self: Fenster): int
 proc targetFps*(self: Fenster): int
 proc `targetFps=`*(self: var Fenster, fps: int)
+proc close*(self: var Fenster)
 ```
 
 ### Input Handling
