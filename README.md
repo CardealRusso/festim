@@ -1,5 +1,5 @@
 # Fenstim
-Fenstim is a Nim wrapper for [Fenster](https://github.com/zserge/fenster), the most minimal cross-platform GUI library. It provides a simple and efficient way to create graphical applications in Nim.
+Fenstim is a Nim wrapper for [Fenster](https://github.com/zserge/fenster), the most minimal cross-platform GUI with 2D canvas library. It provides a simple and efficient way to create graphical applications in Nim.
 
 # Implementation status
 - [x] Minimal 24-bit RGB framebuffer.
