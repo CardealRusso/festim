@@ -24,6 +24,7 @@ type
     raw: ptr FensterStruct
     targetFps: int
     lastFrameTime: int64
+    fps*: float
 
 {.push importc, header: fensterHeader.}
 proc fenster_open(fenster: ptr FensterStruct): cint
@@ -41,7 +42,6 @@ proc close*(self: var Fenster) =
 
 proc `=destroy`(self: Fenster) =
   if self.raw != nil:
-    echo true
     fenster_close(self.raw)
     dealloc(self.raw.buf)
     dealloc(self.raw)
@@ -68,6 +68,9 @@ proc loop*(self: var Fenster): bool =
   
   if elapsedTime < frameTime:
     fenster_sleep((frameTime - elapsedTime).cint)
+
+  if elapsedTime > 0:
+    self.fps = 1000.0 / elapsedTime.float
   
   self.lastFrameTime = fenster_time()
   result = fenster_loop(self.raw) == 0
@@ -92,8 +95,8 @@ proc height*(self: Fenster): int = self.raw.height.int
 proc keys*(self: Fenster): array[256, cint] = self.raw.keys
 proc mouse*(self: Fenster): tuple[x, y, click: int] = (self.raw.x.int, self.raw.y.int, self.raw.mouse.int)
 proc modkey*(self: Fenster): int = self.raw.modkey.int
-proc sleep*(ms: int) = fenster_sleep(ms.cint)
-proc time*(): int64 = fenster_time()
+proc sleep*(self: Fenster, ms: int) = fenster_sleep(ms.cint)
+proc time*(self: Fenster): int64 = fenster_time()
 
 #Below are functions that are not part of Fenster
 proc targetFps*(self: Fenster): int = self.targetFps
