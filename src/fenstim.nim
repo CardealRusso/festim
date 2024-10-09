@@ -78,17 +78,11 @@ proc loop*(self: var Fenster): bool =
 proc `[]`*(self: Fenster, x, y: int): uint32 =
   self.raw.buf[y * self.raw.width + x]
 
-proc `[]=`*(self: Fenster, x, y: int, color: SomeInteger) =
+proc `[]=`*(self: Fenster, x, y: int, color: uint32) =
   self.raw.buf[y * self.raw.width + x] = color.uint32
 
-proc `[]=`*(self: Fenster, x, y: int, color: tuple[r, g, b: SomeInteger]) =
-  let 
-    r = uint8(clamp(color.r, 0, 255))
-    g = uint8(clamp(color.g, 0, 255))
-    b = uint8(clamp(color.b, 0, 255))
-    packed = (uint32(r) shl 16) or (uint32(g) shl 8) or uint32(b)
-
-  self[x, y] = packed
+proc `[]=`*(self: Fenster, x, y: int, color: tuple[r, g, b: uint8]) =
+  self[x, y] = (uint32(color.r) shl 16) or (uint32(color.g) shl 8) or uint32(color.b)
 
 proc width*(self: Fenster): int = self.raw.width.int
 proc height*(self: Fenster): int = self.raw.height.int
