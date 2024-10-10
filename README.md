@@ -85,6 +85,7 @@ proc height*(self: Fenster): int
 proc targetFps*(self: Fenster): int
 proc `targetFps=`*(self: var Fenster, fps: int)
 proc close*(self: var Fenster)
+proc clear*(self: var Fenster)
 ```
 
 ### Input Handling

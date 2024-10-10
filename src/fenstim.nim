@@ -93,6 +93,9 @@ proc sleep*(self: Fenster, ms: int) = fenster_sleep(ms.cint)
 proc time*(self: Fenster): int64 = fenster_time()
 
 #Below are functions that are not part of Fenster
+proc clear*(self: var Fenster) =
+  zeroMem(self.raw.buf, self.raw.width.int * self.raw.height.int * sizeof(uint32))
+
 proc targetFps*(self: Fenster): int = self.targetFps
 proc `targetFps=`*(self: var Fenster, fps: int) = self.targetFps = fps
 proc getFonts*(self: Fenster): seq[string] =
